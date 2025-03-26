@@ -1,0 +1,60 @@
+services:
+  symfony:
+    build: ./symfony
+    container_name: symfony
+    volumes:
+      - ./symfony:/var/www/html
+    networks:
+      - app_network
+    environment:
+      - PHP_IDE_CONFIG=serverName=localhost
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./symfony:/var/www/html
+    ports:
+      - "80:80"
+    depends_on:
+      - symfony
+    networks:
+      - app_network
+
+  signal-api:
+    image: bbernhard/signal-cli-rest-api:latest
+    container_name: signal-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - MODE=json-rpc
+      - JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+      - PATH=/usr/lib/jvm/java-21-openjdk-amd64/bin:$PATH
+    volumes:
+      - signal-data:/home/.local/share/signal-cli
+    networks:
+      - app_network
+
+  signal-bot:
+    build: ./signal-bot
+    container_name: signal-bot
+    volumes:
+      - ./signal-bot:/usr/src/app
+    working_dir: /usr/src/app
+    command: npm start
+    networks:
+      - app_network
+    environment:
+      - SIGNAL_API_URL=http://signal-api:8080
+    depends_on:
+      signal-api:
+        condition: service_healthy
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  signal-data:
