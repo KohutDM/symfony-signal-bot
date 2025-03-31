@@ -29,7 +29,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - MODE=json-rpc
+      - MODE=native
       - JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
       - PATH=/usr/lib/jvm/java-21-openjdk-amd64/bin:$PATH
     volumes:
@@ -47,7 +47,7 @@ services:
     networks:
       - app_network
     environment:
-      - SIGNAL_API_URL=http://signal-api:8080
+      - SIGNAL_API_URL=signal-api:8080
     depends_on:
       signal-api:
         condition: service_healthy
