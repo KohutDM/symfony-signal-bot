@@ -1,8 +1,9 @@
 const http = require('http');
-
+const axios = require('axios');
 const SIGNAL_API_URL = 'signal-api';
 const SIGNAL_API_PORT = 8080;
 const YOUR_PHONE_NUMBER = '+380633499278';
+const SYMFONY_URL = 'http://nginx:80/signal/message'; // URL Symfony
 
 console.log(`SIGNAL_API_URL: ${SIGNAL_API_URL}`);
 
@@ -52,7 +53,7 @@ function receiveSignalMessages() {
         path: `/v1/receive/${YOUR_PHONE_NUMBER}`,
         method: 'GET',
         headers: {
-            'Accept': 'application/json',
+            'Content-Type': 'application/json',
         },
     };
 
@@ -69,14 +70,7 @@ function receiveSignalMessages() {
                 const messages = JSON.parse(data);
                 if (messages && messages.length > 0) {
                     messages.forEach((messageObject) => {
-                        if (messageObject.envelope.dataMessage
-                            && messageObject.envelope.dataMessage.message
-                            && messageObject.envelope.dataMessage.message.toLowerCase().includes('hello')) {
-                            sendSignalMessage(
-                                messageObject.envelope.sourceNumber,
-                                'Hi! I`m glad to hear you, ' + messageObject.envelope.sourceName
-                            );
-                        }
+                        sendToSymfony(messageObject, messageObject.envelope.sourceNumber);
                     });
                 }
             } catch (error) {
@@ -90,6 +84,17 @@ function receiveSignalMessages() {
     });
 
     req.end();
+}
+
+function sendToSymfony(messageObject, recipient) {
+    axios.post(SYMFONY_URL, messageObject)
+        .then(response => {
+            console.log('Response from Symfony:', response.data);
+            sendSignalMessage(recipient, response.data.response);
+        })
+        .catch(error => {
+            console.error('Error sending data to Symfony:', error.message);
+        });
 }
 
 setInterval(receiveSignalMessages, 10000);

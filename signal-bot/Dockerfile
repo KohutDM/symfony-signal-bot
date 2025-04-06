@@ -21,8 +21,15 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh \
     && npm install -g npm@latest \
     && rm -f nodesource_setup.sh
 
-COPY . /app/bot
-WORKDIR /app/bot
+COPY package*.json /usr/src/app/
+WORKDIR /usr/src/app/
+RUN chmod -R 777 /usr/src/app/
+RUN npm cache clean --force
+RUN curl -I https://registry.npmjs.org/
+
+RUN npm install
+
+COPY . /usr/src/app/
 
 COPY supervisord.conf /app/supervisord.conf
 
