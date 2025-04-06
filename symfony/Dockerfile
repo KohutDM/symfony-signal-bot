@@ -17,7 +17,7 @@ RUN pecl install xdebug \
 
 RUN apt-get update && apt-get install -y iproute2
 
-COPY cyber-msn /var/www/html
+COPY . /var/www/html/
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY php-fpm.conf /usr/local/etc/php-fpm.conf
 COPY xdebug.ini /usr/local/etc/php/conf.d/

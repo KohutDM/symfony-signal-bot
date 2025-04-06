@@ -51,9 +51,23 @@ services:
       signal-api:
         condition: service_healthy
 
+  db:
+    image: mysql:8.0
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: 45bGAL9_T^%j
+      MYSQL_DATABASE: symfony_db
+      MYSQL_USER: cyber-msn
+      MYSQL_PASSWORD: 0101LLopo
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app_network
+
 networks:
   app_network:
     driver: bridge
 
 volumes:
   signal-data:
+  db_data:
