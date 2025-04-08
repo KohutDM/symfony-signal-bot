@@ -59,6 +59,8 @@ services:
       MYSQL_DATABASE: symfony_db
       MYSQL_USER: cyber-msn
       MYSQL_PASSWORD: 0101LLopo
+    ports:
+      - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
     networks:

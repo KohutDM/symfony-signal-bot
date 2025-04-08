@@ -97,8 +97,4 @@ function sendToSymfony(messageObject, recipient) {
         });
 }
 
-setInterval(receiveSignalMessages, 10000);
-
-setInterval(() => {
-    console.log('Bot is running...');
-}, 60000);
+setInterval(receiveSignalMessages, 1000);
